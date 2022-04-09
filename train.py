@@ -77,13 +77,16 @@ print("Beginning training...")
 
 now = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 writer = SummaryWriter(log_dir=f'runs/exp_{now}')
-num_epochs = 20
+num_epochs = 500
 idx = 0
 loss_history = [] # Train losses over batches
 train_loss_history = [] # Train losses over epochs
 val_loss_history = []
 train_acc_history = []
 val_acc_history = []
+fig_dir = f'figures/exp_{now}/'
+if not os.path.isdir(fig_dir):
+    os.makedirs(fig_dir)
 for epoch in range(num_epochs):
     epoch_losses = []
     epoch_accuracies = []
@@ -107,7 +110,7 @@ for epoch in range(num_epochs):
         loss_history.append(loss)
         epoch_losses.append(loss)
         epoch_accuracies.append(np.mean(1 * ((pred > 0.5) == label).detach().cpu().numpy()))
-        if idx % 10 == 0:
+        if idx % 100 == 0:
             print(f"Epoch {epoch}, batch {idx}, loss = {loss}")
 
     epoch_loss = sum(epoch_losses) / len(epoch_losses)
@@ -145,7 +148,22 @@ for epoch in range(num_epochs):
     writer.add_scalar('Accuracy/epoch/val', val_loss, epoch)
     
     print(f"Epoch {epoch} val loss = {val_loss} accuracy = {val_accuracy}")
+
     
+    plt.figure()
+    plt.plot(np.arange(1, len(loss_history) + 1), loss_history)
+    plt.savefig(fig_dir + 'train_loss_batch.png')
+
+    plt.figure()
+    plt.plot(np.arange(1, len(train_loss_history) + 1), train_loss_history)
+    plt.plot(np.arange(1, len(val_loss_history) + 1), val_loss_history)
+    plt.savefig(fig_dir + 'loss.png')
+
+    plt.figure()
+    plt.plot(np.arange(1, len(train_acc_history) + 1), train_acc_history)
+    plt.plot(np.arange(1, len(val_acc_history) + 1), val_acc_history)
+    plt.savefig(fig_dir + 'accuracy.png')
+
     model_dir = f'checkpoints/exp_{now}/'
     if not os.path.isdir(model_dir):
         os.makedirs(model_dir)
@@ -153,9 +171,6 @@ for epoch in range(num_epochs):
     
 print("Training completed!")
  
-fig_dir = f'figures/exp_{now}/'
-if not os.path.isdir(fig_dir):
-    os.makedirs(fig_dir)
 print("Figures saved at", fig_dir)
 plt.figure()
 plt.plot(np.arange(1, len(loss_history) + 1), loss_history)
