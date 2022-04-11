@@ -34,7 +34,7 @@ class CustomScale(torch.nn.Module):
     def __init__(self,
                  scale=1/6400,
                  shift=0,
-                 clamp=(0.0, 1.0)
+                 clamp=None,
                 ):
         super(CustomScale, self).__init__()
         self.scale = scale
@@ -42,4 +42,7 @@ class CustomScale(torch.nn.Module):
         self.clamp = clamp
     
     def forward(self, x):
-        return (x * self.scale + self.shift).clamp(self.clamp[0], self.clamp[1])
+        x = (x * self.scale + self.shift)
+        if self.clamp is not None:
+            x = x.clamp(self.clamp[0], self.clamp[1])
+        return x

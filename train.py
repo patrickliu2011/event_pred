@@ -41,8 +41,10 @@ print("Train examples:", len(train_set))
 val_set = HousingDataset("/atlas/u/erikrozi/housing_event_pred/data/val_seasonal_eff.csv", transform=transform)
 print("Val examples:", len(val_set))
 
-train_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True, num_workers=16)
-val_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=False, num_workers=16)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True, num_workers=16,
+                                          last_year=2020)
+val_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=False, num_workers=16,
+                                        last_year=2020)
 
 if "resnet" in sys.argv:
     encoder = torchvision.models.resnet18(pretrained=True).to(device=device)
@@ -77,7 +79,7 @@ print("Beginning training...")
 
 now = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 writer = SummaryWriter(log_dir=f'runs/exp_{now}')
-num_epochs = 500
+num_epochs = 200
 idx = 0
 loss_history = [] # Train losses over batches
 train_loss_history = [] # Train losses over epochs
