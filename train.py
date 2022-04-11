@@ -36,15 +36,15 @@ transform = transforms.Compose(transformations)
 
 reverse_transform = transforms.Normalize(mean=-norm_mean[:3]/norm_std[:3], std=1/norm_std[:3]/SCALE)
 
-train_set = HousingDataset("/atlas/u/erikrozi/housing_event_pred/data/train_seasonal_eff.csv", transform=transform)
+train_set = HousingDataset("/atlas/u/erikrozi/housing_event_pred/data/train_seasonal_eff.csv", transform=transform,
+                          last_year=2020)
 print("Train examples:", len(train_set))
-val_set = HousingDataset("/atlas/u/erikrozi/housing_event_pred/data/val_seasonal_eff.csv", transform=transform)
+val_set = HousingDataset("/atlas/u/erikrozi/housing_event_pred/data/val_seasonal_eff.csv", transform=transform,
+                        last_year=2020)
 print("Val examples:", len(val_set))
 
-train_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True, num_workers=16,
-                                          last_year=2020)
-val_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=False, num_workers=16,
-                                        last_year=2020)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True, num_workers=16)
+val_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=False, num_workers=16)
 
 if "resnet" in sys.argv:
     encoder = torchvision.models.resnet18(pretrained=True).to(device=device)
